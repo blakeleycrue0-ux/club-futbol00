@@ -10,9 +10,9 @@
 
 body{
     margin:0;
-    font-family:'Montserrat', sans-serif;
-    background:#f5f5f5;
-    color:#111;
+    font-family:'Inter', sans-serif;
+    background:#000;
+    color:white;
 }
 
 /* HEADER */
@@ -20,32 +20,38 @@ header{
     display:flex;
     justify-content:space-between;
     padding:20px 40px;
-    background:white;
-    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+    background:#000;
+    border-bottom:1px solid rgba(255,255,255,0.08);
 }
 
 header a{
-    color:#111;
+    color:white;
     text-decoration:none;
-    font-weight:600;
+    font-weight:700;
+    text-transform:uppercase;
+    font-size:13px;
 }
 
-/* TITULO */
+/* 🔥 TITULOS UNIFICADOS (FINOS + IGUALES) */
 .title-card{
     max-width:1100px;
-    margin:25px auto;
-    background:white;
-    padding:20px;
-    border-radius:18px;
+    margin:16px auto;
+    background:rgba(17,17,17,0.75);
+    border:1px solid rgba(255,255,255,0.12);
+
+    padding:8px 18px;   /* más fino */
     text-align:center;
-    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+    border-radius:26px;
 }
 
 .title-card h1,
 .title-card h2{
     margin:0;
-    font-size:28px;
-    font-weight:800;
+    font-family:'Montserrat', sans-serif;
+    font-size:22px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:1px;
 }
 
 /* JUGADORAS */
@@ -59,57 +65,76 @@ header a{
 }
 
 .player-card{
-    background:white;
-    border:1px solid #eee;
+    background:rgba(17,17,17,0.75);
+    border:1px solid rgba(255,255,255,0.12);
     padding:25px;
-    border-radius:18px;
     text-decoration:none;
-    color:#111;
+    color:white;
     text-align:center;
-    transition:0.2s;
+    transition:0.3s;
+    position:relative;
+    overflow:hidden;
 }
 
 .player-card:hover{
-    transform:translateY(-4px);
-    box-shadow:0 6px 15px rgba(0,0,0,0.08);
+    transform:translateY(-6px);
+}
+
+.player-card::after{
+    content:"";
+    position:absolute;
+    bottom:-1px;
+    right:-1px;
+    width:90px;
+    height:90px;
+    background: linear-gradient(
+        135deg,
+        transparent 48%,
+        #000 50%
+    );
+    pointer-events:none;
+}
+
+.player-card h3{
+    margin:0;
+    font-family:'Montserrat', sans-serif;
+    font-weight:900;
 }
 
 .player-card p{
     margin:8px 0;
-    font-weight:600;
-    color:#555;
+    color:#ccc;
 }
 
 .player-card span{
     display:inline-block;
     margin-top:10px;
-    background:#111;
-    color:white;
+    background:white;
+    color:black;
     padding:6px 14px;
-    border-radius:20px;
-    font-weight:700;
+    font-weight:800;
 }
 
-/* CLASIFICACIÓN */
+/* TABLA */
 .table{
     max-width:900px;
     margin:auto;
-    background:white;
-    border-radius:12px;
+    background:rgba(17,17,17,0.75);
+    border:1px solid rgba(255,255,255,0.12);
     overflow:hidden;
-    box-shadow:0 3px 10px rgba(0,0,0,0.08);
 }
 
 .row{
     display:flex;
     justify-content:space-between;
     padding:12px;
-    border-top:1px solid #eee;
+    border-top:1px solid rgba(255,255,255,0.08);
 }
 
 .head{
-    font-weight:800;
-    background:#fafafa;
+    font-weight:900;
+    background:rgba(255,255,255,0.05);
+    text-transform:uppercase;
 }
 
 .row span{
@@ -164,7 +189,6 @@ header a{
 const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS5vTKhCnEoTacQdpcmWgqiiBGrVZmyQBpG59Pdg1ipAT2nAYuFynAlfa9i_ICdd9Kt2UvHlbC1JCE4/pub?output=csv";
 
 function parseRow(row){
-    // 🔥 soporta , y ; automáticamente
     return row.split(/[,;]/).map(x => x.trim());
 }
 
@@ -180,13 +204,10 @@ async function loadTable(){
 
         const text = await res.text();
 
-        const rows = text
-            .split("\n")
-            .map(r => r.trim())
-            .filter(r => r.length > 0);
+        const rows = text.split("\n").filter(r => r.trim().length > 0);
 
         if(rows.length < 2){
-            container.innerHTML = "<div style='padding:20px;text-align:center'>Sin datos en la hoja</div>";
+            container.innerHTML = "<div style='padding:20px;text-align:center'>Sin datos</div>";
             return;
         }
 
@@ -220,19 +241,16 @@ async function loadTable(){
         container.innerHTML = html;
 
     } catch(err){
-
-        console.log(err);
-
-        container.innerHTML = `
-        <div style="padding:20px;text-align:center">
-            No se pudo cargar la clasificación<br>
-            <small>Revisa que la hoja esté publicada como CSV</small>
-        </div>`;
+        container.innerHTML = "<div style='padding:20px;text-align:center'>Error cargando datos</div>";
     }
 }
 
 loadTable();
 
+</script>
+
+</body>
+</html>
 </script>
 </body>
 </html>
