@@ -66,10 +66,10 @@ h1{
     <p id="info"></p>
 
     <div class="stats">
-        <div class="stat"> Goles: <span id="goles"></span></div>
-        <div class="stat"> Amarillas: <span id="amarillas"></span></div>
-        <div class="stat"> Rojas: <span id="rojas"></span></div>
-        <div class="stat"> Jugados: <span id="jugados"></span></div>
+        <div class="stat">⚽ Goles: <span id="goles"></span></div>
+        <div class="stat">🟨 Amarillas: <span id="amarillas"></span></div>
+        <div class="stat">🟥 Rojas: <span id="rojas"></span></div>
+        <div class="stat">🎮 Jugados: <span id="jugados"></span></div>
     </div>
 
     <a href="infantil.html" class="back">← Volver a Infantil</a>
@@ -82,26 +82,39 @@ const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS5vTKhCnEoTacQdpcm
 
 async function load(){
 
-    const res = await fetch(URL);
-    const text = await res.text();
+    try{
 
-    const rows = text.trim().split("\n");
+        const res = await fetch(URL);
+        const text = await res.text();
 
-    for(let i=1;i<rows.length;i++){
+        const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
 
-        const c = rows[i].split(",");
+        for(let i=1;i<lines.length;i++){
 
-        if(c[0].trim() === "Lucía Martínez"){
+            // 🔥 separación más segura
+            const c = lines[i].split(",");
 
-            document.getElementById("nombre").innerText = c[0];
-            document.getElementById("info").innerText = c[1] + " · #" + c[2];
+            const nombre = (c[0] || "").trim();
 
-            document.getElementById("goles").innerText = c[3];
-            document.getElementById("amarillas").innerText = c[4];
-            document.getElementById("rojas").innerText = c[5];
-            document.getElementById("jugados").innerText = c[6];
+            if(nombre === "Lucía Martínez"){
 
+                document.getElementById("nombre").innerText = c[0];
+                document.getElementById("info").innerText = c[1] + " · #" + c[2];
+
+                document.getElementById("goles").innerText = c[3] || 0;
+                document.getElementById("amarillas").innerText = c[4] || 0;
+                document.getElementById("rojas").innerText = c[5] || 0;
+                document.getElementById("jugados").innerText = c[6] || 0;
+
+                return;
+            }
         }
+
+        document.getElementById("nombre").innerText = "Jugadora no encontrada";
+
+    } catch(e){
+        console.log(e);
+        document.getElementById("nombre").innerText = "Error cargando datos";
     }
 }
 
