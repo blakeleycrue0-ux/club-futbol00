@@ -4,16 +4,18 @@
 <meta charset="UTF-8">
 <title>Infantil Femenino</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
 
 <style>
 
 body{
     margin:0;
-    font-family:'Rajdhani', sans-serif;
+    font-family:'Montserrat', sans-serif;
     background:#f5f5f5;
+    color:#111;
 }
 
+/* HEADER */
 header{
     display:flex;
     justify-content:space-between;
@@ -23,17 +25,30 @@ header{
 }
 
 header a{
-    text-decoration:none;
     color:#111;
+    text-decoration:none;
     font-weight:600;
 }
 
-h1{
+/* TITULO */
+.title-card{
+    max-width:1100px;
+    margin:25px auto;
+    background:white;
+    padding:20px;
+    border-radius:18px;
     text-align:center;
-    margin:30px 0;
-    font-family:'Montserrat', sans-serif;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
 }
 
+.title-card h1,
+.title-card h2{
+    margin:0;
+    font-size:28px;
+    font-weight:800;
+}
+
+/* JUGADORAS */
 .players-grid{
     max-width:1100px;
     margin:auto;
@@ -44,30 +59,62 @@ h1{
 }
 
 .player-card{
-    display:block;
     background:white;
+    border:1px solid #eee;
     padding:25px;
     border-radius:18px;
     text-decoration:none;
     color:#111;
-    box-shadow:0 5px 15px rgba(0,0,0,0.08);
     text-align:center;
-    transition:0.3s;
+    transition:0.2s;
 }
 
 .player-card:hover{
-    transform:translateY(-6px);
+    transform:translateY(-4px);
+    box-shadow:0 6px 15px rgba(0,0,0,0.08);
 }
 
-.player-card h3{
-    font-family:'Montserrat';
+.player-card p{
+    margin:8px 0;
+    font-weight:600;
+    color:#555;
 }
 
 .player-card span{
+    display:inline-block;
+    margin-top:10px;
     background:#111;
     color:white;
     padding:6px 14px;
     border-radius:20px;
+    font-weight:700;
+}
+
+/* CLASIFICACIÓN */
+.table{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    padding:12px;
+    border-top:1px solid #eee;
+}
+
+.head{
+    font-weight:800;
+    background:#fafafa;
+}
+
+.row span{
+    width:16%;
+    text-align:center;
 }
 
 </style>
@@ -80,7 +127,9 @@ h1{
     <a href="home.html">← Volver</a>
 </header>
 
-<h1>Plantilla Infantil</h1>
+<div class="title-card">
+    <h1>Infantil</h1>
+</div>
 
 <div class="players-grid">
 
@@ -92,7 +141,7 @@ h1{
 
     <a href="sofia.html" class="player-card">
         <h3>Sofía Pérez</h3>
-        <p>MC</p>
+        <p>Centrocampista</p>
         <span>#8</span>
     </a>
 
@@ -104,5 +153,86 @@ h1{
 
 </div>
 
+<div class="title-card">
+    <h2>Clasificación</h2>
+</div>
+
+<div id="table" class="table"></div>
+
+<script>
+
+const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS5vTKhCnEoTacQdpcmWgqiiBGrVZmyQBpG59Pdg1ipAT2nAYuFynAlfa9i_ICdd9Kt2UvHlbC1JCE4/pub?gid=0&single=true&output=csv";
+
+function parseRow(row){
+    // 🔥 soporta , y ; automáticamente
+    return row.split(/[,;]/).map(x => x.trim());
+}
+
+async function loadTable(){
+
+    const container = document.getElementById("table");
+
+    try{
+
+        const res = await fetch(URL + "&t=" + Date.now(), {
+            cache: "no-store"
+        });
+
+        const text = await res.text();
+
+        const rows = text
+            .split("\n")
+            .map(r => r.trim())
+            .filter(r => r.length > 0);
+
+        if(rows.length < 2){
+            container.innerHTML = "<div style='padding:20px;text-align:center'>Sin datos en la hoja</div>";
+            return;
+        }
+
+        let html = `
+        <div class="row head">
+            <span>Equipo</span>
+            <span>PJ</span>
+            <span>PG</span>
+            <span>PE</span>
+            <span>PP</span>
+            <span>PT</span>
+        </div>
+        `;
+
+        for(let i=1;i<rows.length;i++){
+
+            const c = parseRow(rows[i]);
+
+            html += `
+            <div class="row">
+                <span>${c[0] || "-"}</span>
+                <span>${c[1] || "0"}</span>
+                <span>${c[2] || "0"}</span>
+                <span>${c[3] || "0"}</span>
+                <span>${c[4] || "0"}</span>
+                <span>${c[5] || "0"}</span>
+            </div>
+            `;
+        }
+
+        container.innerHTML = html;
+
+    } catch(err){
+
+        console.log(err);
+
+        container.innerHTML = `
+        <div style="padding:20px;text-align:center">
+            No se pudo cargar la clasificación<br>
+            <small>Revisa que la hoja esté publicada como CSV</small>
+        </div>`;
+    }
+}
+
+loadTable();
+
+</script>
 </body>
 </html>
