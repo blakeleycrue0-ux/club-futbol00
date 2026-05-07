@@ -2,36 +2,24 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Infantil</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
 body{
-    background:#f5f5f5;
+    margin:0;
     font-family:'Rajdhani', sans-serif;
+    background:#f5f5f5;
 }
 
-/* HEADER */
 header{
     display:flex;
     justify-content:space-between;
-    align-items:center;
     padding:20px 40px;
     background:white;
     box-shadow:0 2px 10px rgba(0,0,0,0.08);
-}
-
-header strong{
-    font-family:'Montserrat', sans-serif;
 }
 
 header a{
@@ -40,54 +28,41 @@ header a{
     font-weight:600;
 }
 
-/* USER */
-#user{
-    font-weight:600;
-    color:#111;
-}
-
-/* TITULO */
 h1{
     text-align:center;
     margin:30px 0;
     font-family:'Montserrat', sans-serif;
-    font-size:32px;
-    font-weight:900;
-    text-transform:uppercase;
-    letter-spacing:1px;
 }
 
-/* TABLE */
-.table{
-    max-width:900px;
-    margin:0 auto 50px;
+.players-grid{
+    max-width:1100px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    padding:20px;
+}
+
+.player-card{
+    display:block;
     background:white;
-    border-radius:12px;
-    overflow:hidden;
-    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+    padding:25px;
+    border-radius:18px;
+    text-decoration:none;
+    color:#111;
+    box-shadow:0 5px 15px rgba(0,0,0,0.08);
+    text-align:center;
 }
 
-.row{
-    display:flex;
-    justify-content:space-between;
-    padding:12px;
-    border-bottom:1px solid #eee;
-    transition:0.2s;
+.player-card h3{
+    font-family:'Montserrat';
 }
 
-.row:hover{
-    background:#f6f6f6;
-}
-
-.head{
+.player-card span{
     background:#111;
     color:white;
-    font-weight:700;
-}
-
-.row span{
-    width:14%;
-    text-align:center;
+    padding:6px 14px;
+    border-radius:20px;
 }
 
 </style>
@@ -96,95 +71,33 @@ h1{
 <body>
 
 <header>
-
-    <div><strong>Santa Ponsa Femenino</strong></div>
-
+    <div><strong>Infantil Femenino</strong></div>
     <a href="home.html">← Volver</a>
-
-    <div id="user"></div>
-
 </header>
 
-<h1>Clasificación Infantil</h1>
+<h1>Plantilla Infantil</h1>
 
-<div id="table" class="table"></div>
+<div class="players-grid">
 
-<script>
+    <a href="lucia.html" class="player-card">
+        <h3>Lucía Martínez</h3>
+        <p>Delantera</p>
+        <span>#9</span>
+    </a>
 
-/* HOJA DE CÁLCULO */
-const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS5vTKhCnEoTacQdpcmWgqiiBGrVZmyQBpG59Pdg1ipAT2nAYuFynAlfa9i_ICdd9Kt2UvHlbC1JCE4/pub?gid=0&single=true&output=csv";
+    <a href="sofia.html" class="player-card">
+        <h3>Sofía Pérez</h3>
+        <p>Centrocampista</p>
+        <span>#8</span>
+    </a>
 
-async function loadTable(){
+    <a href="carla.html" class="player-card">
+        <h3>Carla Gómez</h3>
+        <p>Defensa</p>
+        <span>#4</span>
+    </a>
 
-    try{
-
-        const res = await fetch(URL);
-        const text = await res.text();
-
-        let rows = text.trim().split("\n");
-
-        let teams = [];
-
-        for(let i=1;i<rows.length;i++){
-
-            let c = rows[i].split(",");
-
-            teams.push({
-                equipo: c[0],
-                pj: Number(c[1]),
-                pg: Number(c[2]),
-                pe: Number(c[3]),
-                pp: Number(c[4]),
-                pt: Number(c[5])
-            });
-        }
-
-        teams.sort((a,b)=>b.pt - a.pt);
-
-        let html = `
-        <div class="row head">
-            <span>Pos</span>
-            <span>Equipo</span>
-            <span>PJ</span>
-            <span>PG</span>
-            <span>PE</span>
-            <span>PP</span>
-            <span>PT</span>
-        </div>
-        `;
-
-        teams.forEach((t,index)=>{
-            html += `
-            <div class="row">
-                <span>${index+1}</span>
-                <span>${t.equipo}</span>
-                <span>${t.pj}</span>
-                <span>${t.pg}</span>
-                <span>${t.pe}</span>
-                <span>${t.pp}</span>
-                <span>${t.pt}</span>
-            </div>
-            `;
-        });
-
-        document.getElementById("table").innerHTML = html;
-
-    } catch(err){
-        document.getElementById("table").innerHTML =
-        "<div style='padding:20px;text-align:center'>Error cargando datos</div>";
-    }
-}
-
-loadTable();
-
-/* USER */
-let user = localStorage.getItem("user");
-
-if(user){
-    document.getElementById("user").innerText = user;
-}
-
-</script>
+</div>
 
 </body>
 </html>

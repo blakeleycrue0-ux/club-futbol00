@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Lucía Martínez</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+    margin:0;
+    font-family:'Rajdhani', sans-serif;
+    background:#f5f5f5;
+    text-align:center;
+    padding:40px;
+}
+
+.card{
+    max-width:600px;
+    margin:auto;
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+h1{
+    font-family:'Montserrat', sans-serif;
+}
+
+#info{
+    color:#666;
+    margin-bottom:20px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.stat{
+    background:#111;
+    color:white;
+    padding:18px;
+    border-radius:15px;
+}
+
+.back{
+    display:block;
+    margin-top:30px;
+    text-decoration:none;
+    color:#111;
+    font-weight:600;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h1 id="nombre">Cargando...</h1>
+    <p id="info"></p>
+
+    <div class="stats">
+        <div class="stat"> Goles: <span id="goles"></span></div>
+        <div class="stat"> Amarillas: <span id="amarillas"></span></div>
+        <div class="stat"> Rojas: <span id="rojas"></span></div>
+        <div class="stat"> Jugados: <span id="jugados"></span></div>
+    </div>
+
+    <a href="infantil.html" class="back">← Volver a Infantil</a>
+
+</div>
+
+<script>
+
+const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS5vTKhCnEoTacQdpcmWgqiiBGrVZmyQBpG59Pdg1ipAT2nAYuFynAlfa9i_ICdd9Kt2UvHlbC1JCE4/pub?gid=1118130029&single=true&output=csv";
+
+async function load(){
+
+    const res = await fetch(URL);
+    const text = await res.text();
+
+    const rows = text.trim().split("\n");
+
+    for(let i=1;i<rows.length;i++){
+
+        const c = rows[i].split(",");
+
+        if(c[0].trim() === "Lucía Martínez"){
+
+            document.getElementById("nombre").innerText = c[0];
+            document.getElementById("info").innerText = c[1] + " · #" + c[2];
+
+            document.getElementById("goles").innerText = c[3];
+            document.getElementById("amarillas").innerText = c[4];
+            document.getElementById("rojas").innerText = c[5];
+            document.getElementById("jugados").innerText = c[6];
+
+        }
+    }
+}
+
+load();
+
+</script>
+
+</body>
+</html>
