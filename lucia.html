@@ -72,31 +72,40 @@ h1{
         <div class="stat"> Jugados: <span id="jugados"></span></div>
     </div>
 
-    <a href="infantil.html" class="back">← Volver a Infantil</a>
+    <a href="infantil.html" class="back">← Volver</a>
 
 </div>
 
 <script>
 
-const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS5vTKhCnEoTacQdpcmWgqiiBGrVZmyQBpG59Pdg1ipAT2nAYuFynAlfa9i_ICdd9Kt2UvHlbC1JCE4/pub?gid=1118130029&single=true&output=csv";
+const BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS5vTKhCnEoTacQdpcmWgqiiBGrVZmyQBpG59Pdg1ipAT2nAYuFynAlfa9i_ICdd9Kt2UvHlbC1JCE4/pub?gid=1118130029&single=true&output=csv";
+
+function normalize(str){
+    return (str || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+}
 
 async function load(){
 
     try{
 
-        const res = await fetch(URL);
+        const url = BASE_URL + "&t=" + Date.now();
+
+        const res = await fetch(url, { cache: "no-store" });
         const text = await res.text();
 
-        const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+        const rows = text.split("\n").map(r => r.trim()).filter(Boolean);
 
-        for(let i=1;i<lines.length;i++){
+        const target = normalize("Lucía Martínez");
 
-            // 🔥 separación más segura
-            const c = lines[i].split(",");
+        for(let i=1;i<rows.length;i++){
 
-            const nombre = (c[0] || "").trim();
+            const c = rows[i].split(",");
 
-            if(nombre === "Lucía Martínez"){
+            if(normalize(c[0]) === target){
 
                 document.getElementById("nombre").innerText = c[0];
                 document.getElementById("info").innerText = c[1] + " · #" + c[2];
@@ -112,8 +121,8 @@ async function load(){
 
         document.getElementById("nombre").innerText = "Jugadora no encontrada";
 
-    } catch(e){
-        console.log(e);
+    } catch(err){
+        console.log(err);
         document.getElementById("nombre").innerText = "Error cargando datos";
     }
 }
