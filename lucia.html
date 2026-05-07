@@ -4,52 +4,87 @@
 <meta charset="UTF-8">
 <title>Lucía Martínez</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
 
 body{
     margin:0;
-    font-family:'Rajdhani', sans-serif;
+    font-family:Inter, sans-serif;
     background:#f5f5f5;
-    text-align:center;
-    padding:40px;
+    color:#111;
 }
 
-.card{
-    max-width:600px;
-    margin:auto;
+/* HEADER */
+header{
     background:white;
-    padding:40px;
-    border-radius:20px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+    padding:18px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.06);
 }
 
+header a{
+    text-decoration:none;
+    color:#111;
+    font-weight:600;
+}
+
+/* CONTENEDOR */
+.container{
+    max-width:600px;
+    margin:40px auto;
+    padding:0 20px;
+}
+
+/* CARD PRINCIPAL */
+.card{
+    background:white;
+    border-radius:18px;
+    padding:30px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    text-align:center;
+}
+
+/* NOMBRE */
 h1{
-    font-family:'Montserrat', sans-serif;
+    margin:0;
+    font-size:28px;
+    font-weight:800;
 }
 
-#info{
+/* INFO */
+.sub{
     color:#666;
-    margin-bottom:20px;
+    margin-top:5px;
 }
 
+/* STATS */
 .stats{
+    margin-top:25px;
     display:grid;
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:1fr 1fr;
     gap:15px;
 }
 
 .stat{
-    background:#111;
-    color:white;
-    padding:18px;
-    border-radius:15px;
+    background:#f8f8f8;
+    border-radius:14px;
+    padding:15px;
 }
 
-.back{
+.stat span{
     display:block;
-    margin-top:30px;
+    font-size:22px;
+    font-weight:800;
+    margin-top:5px;
+}
+
+/* BOTÓN VOLVER */
+.back{
+    display:inline-block;
+    margin-top:25px;
     text-decoration:none;
     color:#111;
     font-weight:600;
@@ -60,69 +95,94 @@ h1{
 
 <body>
 
-<div class="card">
+<header>
+    <div><strong>Infantil Femenino</strong></div>
+    <a href="infantil.html">← Volver</a>
+</header>
 
-    <h1 id="nombre">Cargando...</h1>
-    <p id="info"></p>
+<div class="container">
 
-    <div class="stats">
-        <div class="stat"> Goles: <span id="goles"></span></div>
-        <div class="stat"> Amarillas: <span id="amarillas"></span></div>
-        <div class="stat"> Rojas: <span id="rojas"></span></div>
-        <div class="stat"> Jugados: <span id="jugados"></span></div>
+    <div class="card">
+
+        <h1 id="nombre">Cargando...</h1>
+        <div class="sub" id="info"></div>
+
+        <div class="stats">
+
+            <div class="stat">
+                Goles
+                <span id="goles">0</span>
+            </div>
+
+            <div class="stat">
+                Amarillas
+                <span id="amarillas">0</span>
+            </div>
+
+            <div class="stat">
+                Rojas
+                <span id="rojas">0</span>
+            </div>
+
+            <div class="stat">
+                Jugados
+                <span id="jugados">0</span>
+            </div>
+
+        </div>
+
     </div>
-
-    <a href="infantil.html" class="back">← Volver</a>
 
 </div>
 
 <script>
 
-const BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS5vTKhCnEoTacQdpcmWgqiiBGrVZmyQBpG59Pdg1ipAT2nAYuFynAlfa9i_ICdd9Kt2UvHlbC1JCE4/pub?gid=1118130029&single=true&output=csv";
+const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS5vTKhCnEoTacQdpcmWgqiiBGrVZmyQBpG59Pdg1ipAT2nAYuFynAlfa9i_ICdd9Kt2UvHlbC1JCE4/pub?gid=1118130029&single=true&output=csv";
 
-function normalize(str){
-    return (str || "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim();
+function normalize(s){
+    return (s||"")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .trim();
+}
+
+function parseRow(r){
+    return r.split(/[,;]/).map(x=>x.trim());
 }
 
 async function load(){
 
     try{
 
-        const url = BASE_URL + "&t=" + Date.now();
-
-        const res = await fetch(url, { cache: "no-store" });
+        const res = await fetch(URL + "&t=" + Date.now());
         const text = await res.text();
 
-        const rows = text.split("\n").map(r => r.trim()).filter(Boolean);
+        const rows = text.split("\n").filter(r=>r.trim());
 
         const target = normalize("Lucía Martínez");
 
         for(let i=1;i<rows.length;i++){
 
-            const c = rows[i].split(",");
+            const c = parseRow(rows[i]);
 
             if(normalize(c[0]) === target){
 
                 document.getElementById("nombre").innerText = c[0];
                 document.getElementById("info").innerText = c[1] + " · #" + c[2];
 
-                document.getElementById("goles").innerText = c[3] || 0;
-                document.getElementById("amarillas").innerText = c[4] || 0;
-                document.getElementById("rojas").innerText = c[5] || 0;
-                document.getElementById("jugados").innerText = c[6] || 0;
+                document.getElementById("goles").innerText = c[3]||0;
+                document.getElementById("amarillas").innerText = c[4]||0;
+                document.getElementById("rojas").innerText = c[5]||0;
+                document.getElementById("jugados").innerText = c[6]||0;
 
                 return;
             }
         }
 
-        document.getElementById("nombre").innerText = "Jugadora no encontrada";
+        document.getElementById("nombre").innerText = "No encontrada";
 
-    } catch(err){
-        console.log(err);
+    } catch(e){
         document.getElementById("nombre").innerText = "Error cargando datos";
     }
 }
